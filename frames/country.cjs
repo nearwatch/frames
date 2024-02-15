@@ -1,4 +1,4 @@
-const fs 		= require('fs')
+const fs 	= require('fs')
 const countries = require('./country.json')
 const template 	= fs.readFileSync('frames/card.html','utf8').toString()
 
@@ -14,7 +14,7 @@ exports.getParams = (query, payload) => {
 				square: true,
 				post_url: '',  
 				buttons: [
-					{label:'Repo', action:'link', target:'https://github.com'},
+					{label:'Repo', action:'link', target:'https://github.com/nearwatch/frames/'},
 					{label:'Play Again', action:'post'}
 				]
 			}
@@ -27,7 +27,6 @@ exports.getParams = (query, payload) => {
 				list.push(p)
 			}
 			const win_ptr = Math.floor(Math.random()*size)
-			console.log(countries[list[win_ptr]])
 			return {
 				svg: fs.readFileSync('./frames/'+countries[list[win_ptr]].flag_1x1,'utf8').toString(),
 				square: true,
