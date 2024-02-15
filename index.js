@@ -44,7 +44,7 @@ function generateMeta(params, meta = ''){
 	meta += '<meta property="fc:frame:image:aspect_ratio" content="'+(params.square?'1:1':'1.91:1')+'"/>'
 	if (params.post_url) 	meta += '<meta property="fc:frame:post_url" content="'+params.post_url+'"/>'
 	if (params.input) 	meta += '<meta property="fc:frame:input:text" content="'+params.input+'"/>'
-    if (params.buttons) {
+    	if (params.buttons) {
 		for (let i=0; i<params.buttons.length; i++){
 			meta += '<meta property="fc:frame:button:'+(i+1)+'" content="'+params.buttons[i].label+'"/>'
 			if (params.buttons[i].action) meta += '<meta property="fc:frame:button:'+(i+1)+':action" content="'+params.buttons[i].action+'"/>'
