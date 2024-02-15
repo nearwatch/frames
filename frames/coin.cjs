@@ -1,4 +1,4 @@
-const fs 		  = require('fs')
+const fs 	  = require('fs')
 const template 	  = fs.readFileSync('frames/card.html','utf8').toString()
 
 exports.getParams = (query, payload) => {
@@ -8,7 +8,7 @@ exports.getParams = (query, payload) => {
 		case 'flip-coin':
 			return {
 				html: template.replace(/%title%/g,`Hello, ${name}!`)
-							  .replace(/%description%/g,'Let\'s play heads or tails. Your call.'),
+					      .replace(/%description%/g,'Let\'s play heads or tails. Your call.'),
 				post_url: '?name='+name+'&step=result',  
 				buttons: [
 					{label:'Heads', action:'post'},
@@ -24,14 +24,14 @@ exports.getParams = (query, payload) => {
 							  .replace(/%description%/g,`You chose ${userChoice.toLowerCase()}, and the coin landed on ${coinFlip.toLowerCase()}.`),
 				post_url: '?name='+name+'&step=flip-coin', 
 				buttons: [
-					{label:'Repo', action:'link', target:'https://github.com'},
+					{label:'Repo', action:'link', target:'https://github.com/nearwatch/frames/'},
 					{label:'Play Again', action:'post'}
 				]
 			}
 		default:
 			return {
 				html: template.replace(/%title%/g,'React free Node.js frame server')
-							  .replace(/%description%/g,'no more overhead'),
+					      .replace(/%description%/g,'no more overhead'),
 				post_url: '?step=flip-coin',  
 				input: 'What&#x27;s your name?',
 				buttons: [
