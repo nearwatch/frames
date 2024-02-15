@@ -9,8 +9,8 @@ exports.getParams = (query, payload) => {
 			const win = payload?.untrustedData.buttonIndex == query.country
 			return {
 				html: template.replace(/color\:black/g, win?'color\:green':'color\:red')
-							  .replace(/%title%/g, win?'You are right!':'You are wrong!')
-							  .replace(/%description%/g,'This is '+countries[+query.data].name),
+					      .replace(/%title%/g, win?'You are right!':'You are wrong!')
+					      .replace(/%description%/g,'This is '+countries[+query.data].name),
 				square: true,
 				post_url: '',  
 				buttons: [
