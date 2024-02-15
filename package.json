@@ -1,0 +1,23 @@
+{
+  "name": "frames",
+  "version": "1.0.0",
+  "description": "Node.js frame server",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@resvg/resvg-js": "^2.6.0",
+    "polka": "^0.5.2",
+    "body-parser": "^1.19.0",
+    "html-react-parser": "^5.1.4",
+    "satori": "^0.10.13"
+  },
+  "type": "module",
+  "engines": {
+    "node": "16.15.1",
+    "npm": "9.8.1"
+  },
+  "author": "Johnny Doe",
+  "license": "MIT"
+}
