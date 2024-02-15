@@ -36,14 +36,14 @@ async function toImage(element, square, width=1200, is_svg){
 	return 'data:image/png;base64,'+png.toString('base64')
 }
 function generateMeta(params, meta = ''){
-	if (params.title) 		meta += '<title>'+params.title+'</title>'
+	if (params.title) 	meta += '<title>'+params.title+'</title>'
 	if (params.description) meta += '<meta name="description" content="'+params.description+'"/>'
 	meta += '<meta property="og:image" content="'+params.image+'"/>'
 	meta += '<meta property="fc:frame" content="vNext"/>'
 	meta += '<meta property="fc:frame:image" content="'+params.image+'"/>'
 	meta += '<meta property="fc:frame:image:aspect_ratio" content="'+(params.square?'1:1':'1.91:1')+'"/>'
 	if (params.post_url) 	meta += '<meta property="fc:frame:post_url" content="'+params.post_url+'"/>'
-	if (params.input) 		meta += '<meta property="fc:frame:input:text" content="'+params.input+'"/>'
+	if (params.input) 	meta += '<meta property="fc:frame:input:text" content="'+params.input+'"/>'
     if (params.buttons) {
 		for (let i=0; i<params.buttons.length; i++){
 			meta += '<meta property="fc:frame:button:'+(i+1)+'" content="'+params.buttons[i].label+'"/>'
@@ -58,7 +58,7 @@ async function request(req, res){
 		const params = frames[req.params.frame].getParams(req.query ? JSON.parse(JSON.stringify(req.query)) : null, req.method == "POST" ? req.body : null)
 		params.image = params.gif || params.png || await toImage(params.svg || params.html, params.square, params.width, params.svg?1:0)
 		params.post_url	= domain+'/'+req.params.frame+params.post_url
-		res.end('<!DOCTYPE html><html><head>'+generateMeta(params)+'</head>'+(req.method == "POST"?'':'<body><h2><code>Node.js frame server</code></h1><p>Github repo <a href="hyyps://github.org" target="_blank">here</a></p></body>')+'</html>')
+		res.end('<!DOCTYPE html><html><head>'+generateMeta(params)+'</head>'+(req.method == "POST"?'':'<body><h2><code>Node.js frame server</code></h1><p>Github repo <a href="https://github.com/nearwatch/frames/" target="_blank">here</a></p></body>')+'</html>')
 	}catch(err){
 		console.log(err)
 		res.writeHead(400)
