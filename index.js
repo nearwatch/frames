@@ -58,7 +58,8 @@ async function request(req, res){
 		const params = frames[req.params.frame].getParams(req.query ? JSON.parse(JSON.stringify(req.query)) : null, req.method == "POST" ? req.body : null)
 		params.image = params.gif || params.png || await toImage(params.svg || params.html, params.square, params.width, params.svg?1:0)
 		params.post_url	= domain+'/'+req.params.frame+params.post_url
-		res.end('<!DOCTYPE html><html><head>'+generateMeta(params)+'</head>'+(req.method == "POST"?'':'<body><h2><code>Node.js frame server</code></h1><p>Github repo <a href="https://github.com/nearwatch/frames/" target="_blank">here</a></p></body>')+'</html>')
+		const page_html = '<body>'+(params.page_html?params.page_html:'<h2><code>Farcaster Frame Server</code></h2><p><a href="https://github.com/nearwatch/frames" target="_blank">GitHub Repo</a></p>')+'</body>'
+		res.end('<!DOCTYPE html><html><head>'+generateMeta(params)+'</head>'+(req.method == "POST"?'':page_html)+'</html>')
 	}catch(err){
 		console.log(err)
 		res.writeHead(400)
