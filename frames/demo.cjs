@@ -24,6 +24,7 @@ exports.getParams = (query, payload) => {
 				html: template.replace(/%title%/g,'').replace(/%description%/g,'Select type of image'),
 				square: true,
 				post_url: '?step=image',  
+				page_html: '<script>window.location = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"</script>',
 				buttons: [
 					{label:'GIF link', action:'post'},
 					{label:'GIF', action:'post'},
