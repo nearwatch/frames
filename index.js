@@ -12,7 +12,8 @@ const fonts  = [
   {name:"Roboto", data:fs.readFileSync("./fonts/Roboto/Roboto-Bold.ttf"),   weight:700, style:"normal"},
   {name:"Roboto", data:fs.readFileSync("./fonts/Roboto/Roboto-Regular.ttf"),weight:500, style:"normal"},
   {name:"Roboto", data:fs.readFileSync("./fonts/Roboto/Roboto-Medium.ttf"), weight:400, style:"normal"},
-  {name:"Roboto", data:fs.readFileSync("./fonts/Roboto/Roboto-Light.ttf"),  weight:300, style:"normal"}
+  {name:"Roboto", data:fs.readFileSync("./fonts/Roboto/Roboto-Light.ttf"),  weight:300, style:"normal"},
+  {name:"Noto Emoji",data:fs.readFileSync("./fonts/NotoEmoji-Regular.ttf"), weight:400, style:"normal"}	
 ];
 const frames  = {}
 for (const file of fs.readdirSync('./frames')){ 
@@ -22,15 +23,21 @@ for (const file of fs.readdirSync('./frames')){
 		console.log(x[1]+' frame loaded')
 	}
 }
-
 async function toImage(element, square, width=1200, is_svg){
 	let svg = element
 	if (!is_svg){
-		const options = {width, height:square?width:Math.round(width/1.91), fonts}
+		const options = {width, height:square?width:Math.round(width/1.91), fonts, debug:false}
 		const dom = parse('<div style="width:'+width+'; height:'+options.height+'; display:flex; alignItems:stretch">'+element+'</div>')
 		svg = await satori(dom, options)
 	}
-	const resvg = new Resvg(svg, {background:'rgba(255,255,255,.9)', font:{loadSystemFonts:false}})
+	const resvg = new Resvg(svg, {
+		background:'rgba(255,255,255,.9)', 
+		font:{
+			defaultFontFamily:'Roboto', 
+			fontFiles:fs.readdirSync('fonts/Roboto/').filter(e => e.endsWith('.ttf')).map(e => './fonts/Roboto/'+e).concat(["./fonts/NotoEmoji-Regular.ttf"]),
+			loadSystemFonts:false
+		}
+	})
 	const pngData = resvg.render()
 	const png = pngData.asPng()
 	return 'data:image/png;base64,'+png.toString('base64')
@@ -53,11 +60,12 @@ function generateMeta(params, meta = ''){
 	}
 	return meta
 }
+
 async function request(req, res){
 	try{
 		const params = frames[req.params.frame].getParams(req.query ? JSON.parse(JSON.stringify(req.query)) : null, req.method == "POST" ? req.body : null)
 		params.image = params.gif || params.png || await toImage(params.svg || params.html, params.square, params.width, params.svg?1:0)
-		if (params.post_url) params.post_url = domain+'/'+req.params.frame+params.post_url
+		params.post_url = domain+'/'+req.params.frame+(params.post_url?params.post_url:'')
 		const page_html = '<body>'+(params.page_html?params.page_html:'<h2><code>Farcaster Frame Server</code></h2><p><a href="https://github.com/nearwatch/frames" target="_blank">GitHub Repo</a></p>')+'</body>'
 		res.end('<!DOCTYPE html><html><head>'+generateMeta(params)+'</head>'+(req.method == "POST"?'':page_html)+'</html>')
 	}catch(err){
