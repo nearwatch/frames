@@ -1,5 +1,5 @@
-const fs 	   	= require('fs')
-const fetch	  	= require('node-fetch')
+const fs 	= require('fs')
+const fetch	= require('node-fetch')
 const {JSDOM} 	= require('jsdom')
 const template 	= fs.readFileSync('frames/card.html','utf8').toString()
 const template2	= fs.readFileSync('frames/tph_text.html','utf8').toString()
@@ -55,7 +55,10 @@ exports.getParams = async (query, payload) => {
 		html:template.replace(/%title%/g,'Telegraph Frames Viewer').replace(/%description%/g,'frames.doe.cx/tph?url=your_telegraph_link'), 
 		post_url:'', 
 		input:'Enter url of telegraph document', 
-		buttons:[{label:'Load document', action:'post'}]
+		buttons:[
+			{label:'Repo', action:'link', target:'https://github.com/nearwatch/frames/'},
+			{label:'Load document', action:'post'}
+		]
 	}
 	source = (prefix[1]?'':'https://')+(prefix[2]?'':'telegra.ph/')+source
 	const doc = await getPage(source)
@@ -63,9 +66,11 @@ exports.getParams = async (query, payload) => {
 		html:template.replace(/%title%/g,doc.error || 'No pages found in document').replace(/%description%/g, source), 
 		post_url:'', 
 		input:'Enter url of telegraph document', 
-		buttons:[{label:'Retry', action:'post'}]
+		buttons:[
+			{label:'Repo', action:'link', target:'https://github.com/nearwatch/frames/'},
+			{label:'Retry', action:'post'}
+		]
 	}
-//	if (!query?.page) console.log(doc)
 	if (!query?.page) return {
 		square: doc.square,
 		html: template.replace(/%title%/g, doc.title?doc.title:'').replace(/%description%/g, (doc.author?.length?doc?.author+' · ':'')+doc.date),
