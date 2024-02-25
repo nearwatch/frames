@@ -71,6 +71,7 @@ async function request(req, res){
 		params.image = params.gif || params.png || await toImage(params.svg || params.html, params.square, params.width, params.svg?1:0)
 		if (params.post_url != undefined) params.post_url = domain+'/'+req.params.frame+(params.post_url?params.post_url:'')
 		const page_html = '<body>'+(params.page_html?params.page_html:'<h2><code>Farcaster Frame Server</code></h2><p><a href="https://github.com/nearwatch/frames" target="_blank">GitHub Repo</a></p>')+'</body>'
+		res.writeHead(200,{'Content-Type':'text/html', 'Cache-Control':'public, max-age='+(params.age?params.age:86400)+', must-revalidate'})
 		res.end('<!DOCTYPE html><html><head><meta charset="utf-8">'+generateMeta(params)+'</head>'+(req.method == "POST"?'':page_html)+'</html>')
 	}catch(err){
 		console.log(err)
