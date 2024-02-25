@@ -71,19 +71,25 @@ exports.getParams = async (query, payload) => {
 			{label:'Retry', action:'post'}
 		]
 	}
-	if (!query?.page) return {
+	let page = query?.page ? +query.page : 0
+	const button = payload?.untrustedData.buttonIndex
+	if (button) page += (!page || button == 2 ? 1 : -1)
+	if (page > doc.pages.length) page=0
+	if (!page) return {
 		square: doc.square,
 		html: template.replace(/%title%/g, doc.title?doc.title:'').replace(/%description%/g, (doc.author?.length?doc?.author+' · ':'')+doc.date),
-		post_url: '?page=1&url='+source,  
+		post_url: '?page=0&url='+source,  
 		page_html: source?'<script>window.location="'+source+'"</script>':null,
 		buttons: [{label:'Start', action:'post'}]
 	}
-	const page = +query.page
 	const result = {
 		square: doc.square,
-		post_url: '?'+(page<doc.pages.length?'page='+(page+1)+'&':'')+'url='+source,  
+		post_url: '?page='+page+'&url='+source,  
 		page_html: source?'<script>window.location="'+source+'"</script>':null,
-		buttons: [{label:page<doc.pages.length?'Next':'Repeat', action:'post'}]
+		buttons: [
+			{label:'Prev'+(page<2?'':' · '+(page-1)), action:'post'},
+			{label:page<doc.pages.length ? 'Next · '+(page+1) : 'Repeat', action:'post'}
+		]
 	}
 	if (doc.pages[page-1].image){
 		result.width = 500
