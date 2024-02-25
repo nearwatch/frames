@@ -41,7 +41,7 @@ function generateMeta(params, meta = ''){
 	meta += '<meta property="fc:frame" content="vNext"/>'
 	meta += '<meta property="fc:frame:image" content="'+params.image+'"/>'
 	meta += '<meta property="fc:frame:image:aspect_ratio" content="'+(params.square?'1:1':'1.91:1')+'"/>'
-	meta += '<meta property="fc:frame:post_url" content="'+params.post_url+'"/>'
+	if (params.post_url) meta += '<meta property="fc:frame:post_url" content="'+params.post_url+'"/>'
 	if (params.refresh_period) meta += '<meta property="fc:frame:refresh_period" content="'+params.refresh_period+'"/>'
 	if (params.input) meta += '<meta property="fc:frame:input:text" content="'+params.input+'"/>'
     	if (params.buttons) {
@@ -69,7 +69,7 @@ async function request(req, res){
 		if (!frames[req.params.frame]) return
 		params = await frames[req.params.frame].getParams(query, req.method == "POST" ? req.body : null)
 		params.image = params.gif || params.png || await toImage(params.svg || params.html, params.square, params.width, params.svg?1:0)
-		params.post_url = domain+'/'+req.params.frame+(params.post_url?params.post_url:'')
+		if (params.post_url != undefined) params.post_url = domain+'/'+req.params.frame+(params.post_url?params.post_url:'')
 		const page_html = '<body>'+(params.page_html?params.page_html:'<h2><code>Farcaster Frame Server</code></h2><p><a href="https://github.com/nearwatch/frames" target="_blank">GitHub Repo</a></p>')+'</body>'
 		res.end('<!DOCTYPE html><html><head><meta charset="utf-8">'+generateMeta(params)+'</head>'+(req.method == "POST"?'':page_html)+'</html>')
 	}catch(err){
