@@ -20,6 +20,8 @@ for (const file of fs.readdirSync('./frames')){
 }
 
 async function toImage(element, square, width=1200, is_svg){
+	const key = cache.getHash(element+width+square)
+	if (cache.getFile(key)) return domain+'/images/'+key
 	let svg = element
 	if (!is_svg){
 		const options = {width, height:square?width:Math.round(width/1.91), fonts, debug:false } 
@@ -32,7 +34,8 @@ async function toImage(element, square, width=1200, is_svg){
 	})
 	const pngData = resvg.render()
 	const png = pngData.asPng()
-	return png.length>190000 ? domain+'/images/'+cache.saveFile(png) : 'data:image/png;base64,'+png.toString('base64')
+	cache.saveFile(key, png)
+	return domain+'/images/'+key
 }
 function generateMeta(params, meta = ''){
 	if (params.title) 	meta += '<title>'+params.title+'</title>'
