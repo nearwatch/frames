@@ -21,7 +21,7 @@ async function getPage(url){
 		const res = await fetch(url,{timeout:15000})	
 		if (!res.ok) return ({error:res.statusText+' ('+res.status+')'})
 		let html = await res.text()
-		const ua	 = 	/\[url;(http.+?)\]/.exec(html)
+		const ua = /\[url;(http.+?)\]/.exec(html)
 		const result = {
 			square:  html.indexOf('[square]')>0,
 			nohp: 	 html.indexOf('[no_home_page]')>0,
@@ -94,13 +94,13 @@ exports.getParams = async (query, payload) => {
 		square: doc.square,
 		html: template.replace(/%title%/g, doc.title?doc.title:'').replace(/%description%/g, (doc.author?.length?doc?.author+' · ':'')+doc.date),
 		post_url: '?page=0&url='+source,  
-		page_html: '<script>window.location="'+(doc.url?doc.url:source)+'"</script>',
+		page_html: '<script>window.location="'+(doc.url || source)+'"</script>',
 		buttons: [{label:'Start', action:'post'}]
 	}
 	const result = {
 		square: doc.square,
 		post_url: '?page='+page+'&url='+source,  
-		page_html: '<script>window.location="'+(doc.url?doc.url:source)+'"</script>',
+		page_html: '<script>window.location="'+(doc.url || source)+'"</script>',
 		buttons: [
 			{label:'Prev'+(page<2?'':' · '+(page-1)), action:'post'},
 			...doc.buttons[page-1],
