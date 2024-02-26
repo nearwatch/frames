@@ -5,10 +5,7 @@ setInterval(()=>{
 	let size = 0
 	const d = Date.now()
 	for (const key of Object.keys(cache))
-		if (!cache[key]?.date || d-cache[key].date > 900000){
-			delete cache[key]
-			delete count[key]
-		} else size += cache[key].file.length
+		if (!cache[key]?.date || d-cache[key].date > 900000) delete cache[key]; else size += cache[key].file.length
 	console.log('cache size:', size)
 }, 300000)
 
