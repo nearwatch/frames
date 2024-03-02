@@ -29,7 +29,9 @@ async function addScores(fid, scores=1){
 		await client.set('fid:'+fid, wallet)
 		await client.quit()
 	} catch(err){console.log(err)}
-	await stack.track("guessed", {account:wallet, points:1}).catch(console.log)
+	try{
+		await stack.track("guessed", {account:wallet, points:1})
+	} catch(err){console.log(err)}
 }
 async function getLB(){
 	try{
