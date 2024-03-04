@@ -1,7 +1,7 @@
-const fs 	    = require('fs')
+const fs 	= require('fs')
 const fetch 	= require('node-fetch')
 const spyman 	= fs.readFileSync('frames/spyman.svg','utf8').toString()
-const template= fs.readFileSync('frames/balance.html','utf8').toString()
+const template  = fs.readFileSync('frames/balance.html','utf8').toString()
 const zerion	= {authorization:'Basic '}
 const buffer	= {}	
 
@@ -23,17 +23,28 @@ async function getUserByName(name){
 	}catch(error){return {error}}
 }
 async function getUserBalance(addr){
-	if (buffer[addr] && Date.now()-buffer[addr]<30000) return {error:'Data is being collected'}
+	if (buffer[addr] && Date.now()-buffer[addr].time < 300000){
+		if (!buffer[addr].error){
+			console.log('restore zerion data from cache')
+			return buffer[addr]
+		}
+		if (Date.now()-buffer[addr].time < 30000) return {error:buffer[addr].error}
+	}
 	try{
 		const res = await fetch('https://api.zerion.io/v1/wallets/'+addr+'/portfolio', {headers:{accept:'application/json', ...zerion}, timeout:60000})
 		if (!res.ok) return {error:res.status}
 		if (res.status == 202) {
-			buffer[addr] = Date.now()
-			return {error:'Data is being collected'}
+			buffer[addr] = {time:Date.now(), error:'Data is being collected'}
+			return {error:buffer[addr].error}
 		} 
 		delete buffer[addr]
 		const data = await res.json()
-		return data?.data?.attributes
+		if (!data?.data?.attributes){
+			buffer[addr] = {time:Date.now(), error:'No data. Try later'}
+			return {error:buffer[addr].error}
+		}	
+		buffer[addr] = {time:Date.now(), updated:new Date().toISOString().substr(0,16).replace('T',' '), ...data.data.attributes}
+		return data.data.attributes
 	}catch(error){return {error}}
 }
 exports.getParams = async (query={}, payload) => {
@@ -57,15 +68,26 @@ exports.getParams = async (query={}, payload) => {
 		}
 		let temp = template
 		for (const key of Object.keys(query)){
-			result.post_url += (result.post_url.length?'&':'?')+key+'='+query[key]
+			if (key!='details' && key!='balance' && key!='updated') result.post_url += (result.post_url.length?'&':'?')+key+'='+query[key]
 			if (values[key] && key!='updated' && key!='balance'){
 				temp = temp.replace('%text%',values[key])
 				if (!query.balance && text.length == 0) delete result.input
 			}
 		}
 		if (query.balance || text.length>0){ 
+			if (query.balance || text=='Data is being collected'){
+				if (query.balance){
+					const bt = query.details?.positions_distribution_by_type
+					const bc = query.details?.positions_distribution_by_chain
+					result.page_html = '<div>'+(query.name?'<h3>@'+query.name+'</h3>':'')+(query.fid?'fid: '+query.fid+'<br />':'')+(query.address?'address: '+query.address+'<br />':'')+(query.balance?'<h4>Total: $'+query.balance+'</h4>':'')+'</div>'
+					result.page_html += bt ? '<div>by type:<ul>'+Object.keys(bt).map(key => '<li>'+key+': $'+bt[key].toFixed(2)).join('</li>')+'</ul></div>' : ''
+					result.page_html += bc ? '<div>by chain:<ul>'+Object.keys(bc).map(key => '<li>'+key+': $'+bc[key].toFixed(2)).join('</li>')+'</ul></div>' : ''
+					result.page_html += query.updated ? '<div style="margin-top:50px; color:silver">updated '+query.updated+'</div>' : ''
+					result.buttons.push({label:'More details', action:'link', target:'https://frames.doe.cx/balance'+result.post_url})
+				}
+				result.buttons.push({label:'Etherscan', action:'link', target:'https://etherscan.io/address/'+query.address+'#multichain-portfolio'})
+			}
 			result.post_url = ''
-			if (query.balance || text=='Data is being collected') result.buttons.push({label:'Etherscan', action:'link', target:'https://etherscan.io/address/'+query.address+'#multichain-portfolio'})
 		}
 		temp = temp.replace('%text%',text).replace(/%text%/g,'').replace('%balance%',values.balance).replace('%updated%',values.updated)
 		result.svg = spyman.replace(/%message%/g, temp)
@@ -82,8 +104,9 @@ exports.getParams = async (query={}, payload) => {
 	if (query.address){
 		const balance = await getUserBalance(query.address)	
 		if (balance.error) return window('Error getting balances')
+		query.details = balance
 		query.balance = balance?.total?.positions?.toFixed(2)
-		query.updated = new Date().toISOString().substr(0,16).replace('T',' ')
+		query.updated = balance.updated || new Date().toISOString().substr(0,16).replace('T',' ')
 		return window(query)
 	} else if (query.fid || query.name){
 		if (!query.fid){
