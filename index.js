@@ -46,7 +46,7 @@ function generateMeta(params, meta = ''){
 	meta += '<meta property="of:version" content="vNext"/><meta property="of:accepts:farcaster" content="vNext"/>'  
 	meta += '<meta property="of:image" content="'+params.image+'"/>'
 	if (params.post_url) meta += '<meta property="of:post_url" content="'+params.post_url+'"/>'
-	if (params.input) meta += '<meta property="fc:frame:input:text" content="'+params.input+'"/>'
+	if (params.input) meta += '<meta property="of:input:text" content="'+params.input+'"/>'
 	meta += '<meta property="of:image:aspect_ratio" content="'+(params.square?'1:1':'1.91:1')+'"/>'
 	if (params.state) meta += '<meta property="of:state" content="'+params.state+'"/>'
     	if (params.buttons) {
