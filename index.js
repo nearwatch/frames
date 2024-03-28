@@ -38,14 +38,30 @@ async function toImage(element, square, width=1200, is_svg){
 	return domain+'/images/'+key
 }
 function generateMeta(params, meta = ''){
-	if (params.title) 	meta += '<title>'+params.title+'</title>'
-	if (params.description) meta += '<meta name="description" content="'+params.description+'"/>'
+// open graph	
+	if (params.title) 	meta += '<title>'+params.title+'</title><meta property="og:title" content="'+params.title+'"/>'
+	if (params.description) meta += '<meta property="og:description" content="'+params.description+'"/>'
 	meta += '<meta property="og:image" content="'+params.image+'"/>'
-	meta += '<meta property="fc:frame" content="vNext"/>'
+// open frame
+	meta += '<meta property="of:version" content="vNext"/><meta property="of:accepts:farcaster" content="vNext"/>'  
+	meta += '<meta property="of:image" content="'+params.image+'"/>'
+	if (params.post_url) meta += '<meta property="of:post_url" content="'+params.post_url+'"/>'
+	if (params.input) meta += '<meta property="fc:frame:input:text" content="'+params.input+'"/>'
+	meta += '<meta property="of:image:aspect_ratio" content="'+(params.square?'1:1':'1.91:1')+'"/>'
+	if (params.state) meta += '<meta property="of:state" content="'+params.state+'"/>'
+    	if (params.buttons) {
+		for (let i=0; i<params.buttons.length; i++){
+			meta += '<meta property="of:button:'+(i+1)+'" content="'+params.buttons[i].label+'"/>'
+			if (params.buttons[i].action) meta += '<meta property="of:button:'+(i+1)+':action" content="'+params.buttons[i].action+'"/>'
+			if (params.buttons[i].target) meta += '<meta property="of:button:'+(i+1)+':target" content="'+params.buttons[i].target+'"/>'
+		}
+	}
+//	farcaster frame
+	meta += '<meta property="fc:frame" content="vNext"/>' 
 	meta += '<meta property="fc:frame:image" content="'+params.image+'"/>'
 	meta += '<meta property="fc:frame:image:aspect_ratio" content="'+(params.square?'1:1':'1.91:1')+'"/>'
 	if (params.post_url) meta += '<meta property="fc:frame:post_url" content="'+params.post_url+'"/>'
-	if (params.refresh_period) meta += '<meta property="fc:frame:refresh_period" content="'+params.refresh_period+'"/>'
+	if (params.state) meta += '<meta property="fc:frame:state" content="'+params.state+'"/>'
 	if (params.input) meta += '<meta property="fc:frame:input:text" content="'+params.input+'"/>'
     	if (params.buttons) {
 		for (let i=0; i<params.buttons.length; i++){
