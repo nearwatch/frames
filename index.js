@@ -43,7 +43,7 @@ function generateMeta(params, meta = ''){
 	if (params.description) meta += '<meta property="og:description" content="'+params.description+'"/>'
 	meta += '<meta property="og:image" content="'+params.image+'"/>'
 // open frame
-	meta += '<meta property="of:version" content="vNext"/><meta property="of:accepts:farcaster" content="vNext"/>'  
+	meta += '<meta property="of:version" content="vNext"/><meta property="of:accepts:xmtp" content="2024-02-01"/>'  
 	meta += '<meta property="of:image" content="'+params.image+'"/>'
 	if (params.post_url) meta += '<meta property="of:post_url" content="'+params.post_url+'"/>'
 	if (params.input) meta += '<meta property="of:input:text" content="'+params.input+'"/>'
@@ -56,7 +56,7 @@ function generateMeta(params, meta = ''){
 			if (params.buttons[i].target) meta += '<meta property="of:button:'+(i+1)+':target" content="'+params.buttons[i].target+'"/>'
 		}
 	}
-//	farcaster frame
+// farcaster frame
 	meta += '<meta property="fc:frame" content="vNext"/>' 
 	meta += '<meta property="fc:frame:image" content="'+params.image+'"/>'
 	meta += '<meta property="fc:frame:image:aspect_ratio" content="'+(params.square?'1:1':'1.91:1')+'"/>'
